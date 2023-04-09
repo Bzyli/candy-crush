@@ -1,6 +1,7 @@
 from random import randint 
 import tkinter as tk #utilisé uniquement pour l'affichage
 import re #utilisé uniquement pour l'affichage et de la magie noire
+import time
 
 WINDOW = tk.Tk()
 GRID = []
@@ -191,6 +192,7 @@ def actualise_grille(grid):
     combo = 1
     COUPS_JOUES += 1
     while len(liste_combis) > 0:
+        time.sleep(1)
         remplacement_comb(grid, liste_combis)
         update_score(liste_combis, combo, COUPS_JOUES)
         liste_combis = detect_combi(grid,[0,0], [SIZE - 1, SIZE - 1])
