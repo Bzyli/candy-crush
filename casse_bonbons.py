@@ -209,7 +209,6 @@ def affiche_grille(grid):
     --------
     Rien, agit sur l'interface graphique
     """
-    pprint(grid)
     for i in range(SIZE):
         for j in range(SIZE):
             set_cell_color(i, j, COLORS[grid[i][j] -1])
@@ -233,7 +232,7 @@ def remplacement_comb(grid, liste_combis):
     remove_comb(liste_combis, grid)
     guillotiere(grid, liste_combis)
     fill_from_top(grid)
-    affiche_grille(grid)
+    WINDOW.after(750,affiche_grille(grid))
 
 
 def remove_comb(liste_combis, grille):
