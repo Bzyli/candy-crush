@@ -1,7 +1,6 @@
 from random import randint 
 import tkinter as tk #utilisé uniquement pour l'affichage
-import re #utilisé uniquement pour l'affichage
-
+import re #utilisé uniquement pour l'affichage et de la magie noire
 
 WINDOW = tk.Tk()
 GRID = []
@@ -23,13 +22,15 @@ class DragManager():
     start_x, start_y = 0,0
     dragged = None
 
+
     def __init__(self,widget):
         """
         Nécessaire pour utiliser une classe, pas forcément très important à comprendre
         """
         self.widget = widget
         self.add_dragable(self.widget)
-    
+
+
     def add_dragable(self, widget):
         """
         Prends en argument un widget (un bonbon) et lui assigne des actions quand on clique dessus
@@ -39,7 +40,8 @@ class DragManager():
         self.widget.bind("<B1-Motion>", self.on_drag)
         self.widget.bind("<ButtonRelease-1>", self.on_drop)
         self.widget["cursor"] = "hand1"
-    
+
+
     def on_start(self, event):
         """
         Récupère les coordonnées auxquelles on commence le glissé déposé
@@ -50,12 +52,14 @@ class DragManager():
         dragged_item = event.widget.find_withtag("current")
         DragManager.dragged = (event.widget, dragged_item)
 
+
     def on_drag(self, event):
         """
         Calcul la longeur du déplacement à chaque instant et vérifie que l'on ne va pas trop loin, replace le curseur au bon endroit si on est trop loin
         """
         dx = event.widget.winfo_pointerx() - DragManager.start_x
         dy = event.widget.winfo_pointery() - DragManager.start_y
+
 
     def on_drop(self, event):
         """
@@ -68,8 +72,8 @@ class DragManager():
         dropped_color = widget.itemcget(candy[0], 'fill')
         dragged_color = DragManager.dragged[0].itemcget(DragManager.dragged[1], "fill") # On garde en mémoire les couleurs des deux bonbons avant modification
         
-        dropped_id = self.get_widget_id(widget)
-        dragged_id = self.get_widget_id(DragManager.dragged[0])
+        dropped_id = self.get_widget_id(widget) - 1
+        dragged_id = self.get_widget_id(DragManager.dragged[0]) - 1
         # On test ici si le mouvement que le joueur souhaite réalisé est possible ou non. Si il ne l'est pas, on affiche un message dans la console et on quitte la fonction sans faire de modification
         if self.get_widget_id(widget) != (self.get_widget_id(DragManager.dragged[0]) - SIZE) and self.get_widget_id(widget) != (self.get_widget_id(DragManager.dragged[0]) + SIZE) and (self.get_widget_id(widget) != self.get_widget_id(DragManager.dragged[0]) - 1) and self.get_widget_id(widget) != (self.get_widget_id(DragManager.dragged[0]) + 1) :
             print("La case doit être échangé avec une case adjacente")
@@ -88,8 +92,7 @@ class DragManager():
         GRID[(self.get_widget_id(DragManager.dragged[0]) - 1 )//SIZE][(self.get_widget_id(DragManager.dragged[0]) - 1 ) % SIZE] = COLORS.index(dropped_color) + 1
         
         actualise_grille(GRID)
-                
-                
+
 
     def get_widget_id(self, widget):
         """
@@ -102,6 +105,7 @@ class DragManager():
         """
         iden = list(map(int, re.findall(r'\d+', str(widget))))
         return iden[0] if iden != [] else 1 
+
 
 class Gui:
     """
@@ -150,7 +154,6 @@ def set_cell_color(row, col, color):
             canvas.itemconfig(canvas.find_withtag("candy")[0] , fill=color)
 
 
-
 def init_grid():
     """
     Fonction qui initialise une grille de valeurs aléatoires entre 1 et 6.
@@ -168,8 +171,6 @@ def init_grid():
             line.append(randint(1,6))
         grid.append(line)
     return grid
-
-
 
 def actualise_grille(grid):
     """
@@ -194,11 +195,24 @@ def actualise_grille(grid):
         update_score(liste_combis, combo, COUPS_JOUES)
         liste_combis = detect_combi(grid,[0,0], [SIZE - 1, SIZE - 1])
         combo += 1
+        
+def affiche_grille(grid):
+    """
+    Fonction qui s'occupe de l'affichage de la grille sur notre interface graphique
+
+    Paramètres:
+    ----------
+    grid : list
+        grille de jeu
+    
+    Retour :
+    --------
+    Rien, agit sur l'interface graphique
+    """
+    pprint(grid)
     for i in range(SIZE):
         for j in range(SIZE):
-            set_cell_color(i, j, COLORS[grid[i][j] - 1])
-
-
+            set_cell_color(i, j, COLORS[grid[i][j] -1])
 
 def remplacement_comb(grid, liste_combis):
     """
@@ -219,7 +233,7 @@ def remplacement_comb(grid, liste_combis):
     remove_comb(liste_combis, grid)
     guillotiere(grid, liste_combis)
     fill_from_top(grid)
-
+    affiche_grille(grid)
 
 
 def remove_comb(liste_combis, grille):
@@ -245,7 +259,6 @@ def remove_comb(liste_combis, grille):
         grille[i][j] = 0
 
 
-
 def fill_from_top(grid):
     """
     Fonction qui remplace les zéros (cases vides) par un chiffre aléatoire entre 1 et 6 correspondant à un nouveau bonbon
@@ -267,7 +280,7 @@ def fill_from_top(grid):
                 
 
 
-def guillotiere(grille, liste_coord):#en référence à une célèbre place forte lyonnaise
+def guillotiere(grille, liste_coord):#en référence à une célèbre place forte lyonnaisle. Cf : https://youtu.be/QaPeaDvNFRo
     """
     Fonction qui fait descendre (de police) les bonbons à la place des cases vides afin de faire remonter les cases vides
     
@@ -306,7 +319,6 @@ def guillotiere(grille, liste_coord):#en référence à une célèbre place fort
             grille[k][current_colonne] = colonne[k]
 
 
-
 def detect_combi(grille,coord_debut,coord_fin):
     """
     Fonction qui permet de détecter les coordonées de toutes les combinaisons entre deux points de la grille, sera toujours utilisée sur la grille en entière car plus simple à implémenter mais permet une optimisation du temps de calcul si utilisé sur une zone précise
@@ -333,7 +345,6 @@ def detect_combi(grille,coord_debut,coord_fin):
                 if len(detect_coord(grille, i, j)) != 0:
                     liste_coord_combis.extend(detect_coord(grille, i, j))
     return  liste_coord_combis
-
 
 
 def detect_voisin(grille,liste_current,liste_bords,liste_traitee,liste_a_traiter):
@@ -389,7 +400,6 @@ def detect_voisin(grille,liste_current,liste_bords,liste_traitee,liste_a_traiter
         else:
             i += 1
     return liste_voisins
-
 
 
 def detect_coord(grille,x,y):
@@ -460,7 +470,6 @@ def detect_coord(grille,x,y):
     return liste_finale
 
 
-
 def compte_score(liste_coordonnees):
     """
     Fonction qui calcule le score en fonction de la longueur de la liste des coordonées de la combinaison, utilisant les règles définies dans le rapport/readme
@@ -487,7 +496,6 @@ def compte_score(liste_coordonnees):
     return SCORE
 
 
-
 def update_score(liste_coord, combo, COUPS_JOUES):
     """
     Fonction qui permet de mettre à jour le score dans le nom de la fenêtre Tkinter, fait appel à compte_score pour calculer le score
@@ -508,7 +516,6 @@ def update_score(liste_coord, combo, COUPS_JOUES):
     """
     score = compte_score(liste_coord)
     WINDOW.title(f"Candy Crush| Coups joués : {COUPS_JOUES} | Score : {score}, COMBO : {combo}")
-
 
 
 def test_detect_coord():
@@ -553,7 +560,6 @@ def test_detect_coord():
     print((detect_coord(grille4, i, j)) == [])
 
 
-
 test_detect_coord() #appel le test de la fonction avant l'exécution du programme principal
 
 
@@ -571,4 +577,5 @@ def main():
     gui = Gui(WINDOW, SIZE, GRID)
     WINDOW.mainloop()
     
-main()
+if __name__ == "__main__":
+    main()
