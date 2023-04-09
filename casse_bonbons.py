@@ -232,7 +232,7 @@ def remplacement_comb(grid, liste_combis):
     remove_comb(liste_combis, grid)
     guillotiere(grid, liste_combis)
     fill_from_top(grid)
-    WINDOW.after(750,affiche_grille(grid))
+    affiche_grille(grid)
 
 
 def remove_comb(liste_combis, grille):
